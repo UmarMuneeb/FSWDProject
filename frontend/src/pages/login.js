@@ -10,18 +10,27 @@ const Login = () => {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    try {
-      const response = await axios.post("http://localhost:5000/api/login", {
-        email,
-        password,
-      });
+  try {
+    const response = await axios.post("http://localhost:5000/api/login", {
+      email,
+      password,
+    });
 
-      alert(response.data.message); 
-      navigate("/"); 
-    } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+    const userId = response.data?.user?._id;
+
+    if (userId) {
+      localStorage.setItem("userId", userId);
+      console.log("User ID stored:", userId);
+      alert(response.data.message);
+      navigate("/home"); 
+    } else {
+      alert("Login succeeded but user info is missing.");
     }
-  };
+  } catch (err) {
+    alert(err.response?.data?.message || "Login failed");
+  }
+};
+
 
   return (
     <div className='w-full h-screen flex flex-row font-poppins flex-wrap'>

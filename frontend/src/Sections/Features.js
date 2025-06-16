@@ -7,7 +7,7 @@ const Features = () => {
     <div>
         <div className='pl-10 font-bold text-3xl font-poppins py-10'>Features</div>
          <div className='w-10/12 m-auto flex flex-row items-center justify-center gap-10 flex-wrap'>
-            <div className='flex flex-col w-1/4 bg-green-600 text-white px-3 py-5 rounded-xl shadow-lg min-w-52'>
+            <div className='flex flex-col w-1/4 h-50 bg-green-600 text-white px-3 py-5 rounded-xl shadow-lg min-w-52'>
                 <div>
                     <h2 className='font-bold text-xl'>Direct Market Access</h2>
                 </div>
@@ -21,7 +21,7 @@ const Features = () => {
                     </div>
                 </div>
             </div>
-              <div className='flex flex-col w-1/4 bg-green-600 text-white px-3 py-5 rounded-xl shadow-lg min-w-52'>
+              <div className='flex flex-col w-1/4 h-50 bg-green-600 text-white px-3 py-5 rounded-xl shadow-lg min-w-52'>
                 <div>
                     <h2 className='font-bold text-xl'>Tools & Resources</h2>
                 </div>
@@ -35,7 +35,7 @@ const Features = () => {
                     </div>
                 </div>
             </div>
-             <div className='flex flex-col w-1/4 bg-green-600 text-white px-3 py-5 rounded-xl shadow-lg min-w-52'>
+             <div className='flex flex-col w-1/4 h-50 bg-green-600 text-white px-3 py-5 rounded-xl shadow-lg min-w-52'>
                 <div>
                     <h2 className='font-bold text-xl'>Crop Price Trends</h2>
                 </div>
@@ -44,14 +44,13 @@ const Features = () => {
                         <p className='text-sm '>Monitor daily price changes for popular crops to sell at the right time.</p>
                     </div>
                     <div>
-                        
                         <img src={chart} width={"30px"} height={"30px"} className='pt-2 invert'></img>
                     </div>
                 </div>
             </div>
             
         </div>
-        <div className='mt-48 flex justify-center items-center'>
+        <div className='mt-24 flex justify-center items-center py-20 bg-gray-200 '>
             <div className='w-2/4 flex flex-col items-center justify-center'>
                 <div className='font-bold text-2xl text-center'>
                     <p>Follow the Latest Trends</p>
@@ -60,7 +59,7 @@ const Features = () => {
                     <p>With our NewsLetter</p>
                 </div>
                 <div className='flex justify-center'>
-                    <input type='email' className='w-52' placeholder='Example@gmail.com'></input>
+                    <input type='email' className='w-52 p-2 border-2 border-gray-500' placeholder='Example@gmail.com'></input>
                     <button className='bg-green-600 text-sm ml-2 rounded-md p-1 text-white hover:bg-green-400'>Submit</button>
                 </div>
             </div>

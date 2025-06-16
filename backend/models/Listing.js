@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const ListingSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
   tobaccoType: {
     type: String,
     enum: ["Naswar", "Cigarette"],
@@ -27,6 +32,7 @@ const ListingSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
 
 const Listing = mongoose.model("Listing", ListingSchema);
 

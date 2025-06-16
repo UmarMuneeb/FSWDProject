@@ -4,7 +4,7 @@ import Listing from '../models/Listing.js';
 const router = express.Router();
 
 // ✅ CREATE a new listing
-router.post('/', async (req, res) => {
+router.post('/add', async (req, res) => {
   try {
     const listing = new Listing(req.body);
     const saved = await listing.save();
@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
 });
 
 // ✅ READ all listings
-router.get('/', async (req, res) => {
+router.get('/get', async (req, res) => {
   try {
     const listings = await Listing.find();
     res.json(listings);
@@ -26,22 +26,20 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ✅ READ a single listing by ID
-router.get('/:id', async (req, res) => {
+// ✅ GET all listings for a specific user
+router.get('/user/:userId', async (req, res) => {
   try {
-    const listing = await Listing.findById(req.params.id);
-    if (!listing) {
-      return res.status(404).json({ error: 'Listing not found' });
-    }
-    res.json(listing);
+    const listings = await Listing.find({ userId: req.params.userId });
+    res.json(listings);
   } catch (err) {
-    console.error('Error fetching listing:', err);
+    console.error('Error fetching user listings:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
 // ✅ UPDATE a listing
-router.put('/:id', async (req, res) => {
+// UPDATE a listing by ID
+router.put('/update/:id', async (req, res) => {
   try {
     const updated = await Listing.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -57,8 +55,8 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// ✅ DELETE a listing
-router.delete('/:id', async (req, res) => {
+// DELETE a listing by ID
+router.delete('/del/:id', async (req, res) => {
   try {
     const deleted = await Listing.findByIdAndDelete(req.params.id);
     if (!deleted) {
@@ -70,5 +68,6 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 export default router;

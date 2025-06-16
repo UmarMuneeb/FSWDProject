@@ -1,9 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
-// import mongoose from "mongoose";
 import { ConnectDB } from "./config/db.js";
 import cors from "cors";
-
+import listingRoutes from "./routes/listingsroute.js"
 import authRoutes from "./routes/auth.js"; 
 
 dotenv.config();
@@ -19,6 +18,8 @@ app.use(express.json()); // Parse JSON bodies
 
 // Routes
 app.use("/api", authRoutes);
+
+app.use("/api/listing",listingRoutes)
 
 // Test route
 app.get("/", (req, res) => {

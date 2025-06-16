@@ -1,70 +1,54 @@
-import React from 'react'
-import { tobaccoListings } from '../Data/agriItems'
-import Cart from './Cart'
-import Features from './Features'
-import { useState } from 'react'
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 const Items = () => {
-    
-    const [cart,setCart]=useState([])
-    const [selecteditem,setSelecteditem]=useState(null)
-    const [servings, setServings] = useState(1);
-    const [deliveryTime,setDeliveryTime]=useState(5)
+  const [items, setItems] = useState([]);
+  const navigate = useNavigate();
 
-    const onClickAdd=(item)=>{
-        setSelecteditem(item)
-        setDeliveryTime(5);
-
-    }
-    const cancel=()=>{
-        setSelecteditem(null);
-    }
-
-    const addtoCart = (item) => {
-        const servingsNeeded = Math.ceil(servings / item.serves);
-        console.log(servingsNeeded)
-        const itemToAdd = {
-          ...item,
-          requestedPersons: servings,
-          quantity: servingsNeeded,
-          price: item.price * servingsNeeded,
-          deliverytime: deliveryTime
-        };
-        console.log(item.price)
-      
-        const index = cart.findIndex(cartItem => cartItem.id === item.id);
-      
-        if (index === -1) {
-          setCart(prev => [...prev, itemToAdd]);
-        } else {
-          const updatedCart = [...cart];
-          updatedCart[index] = {
-            ...updatedCart[index],
-            quantity: updatedCart[index].quantity + servingsNeeded,
-            requestedPersons: updatedCart[index].requestedPersons + servings,
-            price: updatedCart[index].price + itemToAdd.price,
-          };
-          setCart(updatedCart);
-        }
-      
-        setSelecteditem(null);
-        setServings(1);
-        setDeliveryTime(5);
-        console.log(cart)
-      };
-      
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/listing/get")
+      .then((res) => setItems(res.data.slice(0, 4))) // Show only 4 items
+      .catch((err) => console.error("Fetch error:", err));
+  }, []);
 
   return (
     <>
-    <div className='pl-10 font-bold text-3xl font-poppins py-10'>Popular Items</div>
-    <hr className='border-t-1 border-black'></hr>
-    <div className='w-full px-20 pt-5 bg-gray-200 font-poppins'>
-        
-        
-    </div>
-    <hr className='border-t-1 border-black'></hr>
-    </>
-   
-  )
-}
+      <div className="flex justify-between items-center px-10 font-poppins py-10">
+        <div className="font-bold text-3xl">Popular Items</div>
+        <button
+          onClick={() => navigate("/listings")}
+          className="text-sm text-green-700 font-semibold border border-green-700 px-4 py-1 rounded hover:bg-green-700 hover:text-white transition"
+        >
+          Show More →
+        </button>
+      </div>
 
-export default Items
+      <hr className="border-t-1 border-black" />
+
+      <div className="w-full px-20 py-8 bg-gray-200 font-poppins flex gap-6 flex-wrap justify-center">
+        {items.map((item) => (
+          <div key={item._id} className="bg-white p-4 rounded-xl shadow-md w-64">
+            <img
+              src={item.photoUrls?.[0] || "https://via.placeholder.com/300"}
+              alt={item.tobaccoType}
+              className="h-32 w-full object-cover rounded"
+            />
+            <h3 className="font-semibold text-lg mt-2">{item.tobaccoType}</h3>
+            <p className="text-sm text-gray-500">{item.location}</p>
+            <p className="text-green-700 font-bold">Qty: {item.quantityAvailable}</p>
+            <p className="text-sm text-gray-700">{item.phoneNumber}</p>
+            <p className="text-xs text-gray-400 mt-1">
+              Listed: {new Date(item.createdAt).toLocaleDateString()}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <hr className="border-t-1 border-black" />
+    </>
+  );
+};
+
+export default Items;
