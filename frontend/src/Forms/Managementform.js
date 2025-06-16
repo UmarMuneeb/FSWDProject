@@ -104,56 +104,59 @@ const ManageListingsForm = () => {
         <div className="bg-black flex bg-opacity-70 fixed mt-5 inset-0 justify-center items-center w-full h-lvh">
           <form onSubmit={handleUpdate} className="flex flex-col gap-1 bg-gray-200 p-8 rounded w-2/4 min:w-2/4">
             <h3 className="text-xl font-bold mb-4">Edit Listing</h3>
-            <div className="mb-2">
-              <label className="block mb-1">Tobacco Type</label>
-              <input
-                value={formData.tobaccoType}
-                onChange={(e) => setFormData({ ...formData, tobaccoType: e.target.value })}
-                className="border-2 rounded-md p-2 w-full border-blue-500"
-                required
-              />
+            <div className="flex flex-row gap-2">
+              <div className="mb-2">
+                <label className="block mb-1">Tobacco Type</label>
+                <input
+                  value={formData.tobaccoType}
+                  onChange={(e) => setFormData({ ...formData, tobaccoType: e.target.value })}
+                  className="border-2 rounded-md p-2 w-full border-green-600"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1">Phone Number</label>
+                <input
+                  value={formData.phoneNumber}
+                  onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                  className="border-2 rounded-md p-2 w-full border-green-600"
+                  required
+                />
+              </div>
+              
+              <div className="mb-2">
+                <label className="block mb-1">Quantity Available</label>
+                <input
+                  type="number"
+                  value={formData.quantityAvailable}
+                  onChange={(e) => setFormData({ ...formData, quantityAvailable: e.target.value })}
+                  className="border-2 rounded-md p-2 w-full border-green-600"
+                  required
+                />
+              </div>
             </div>
-
             <div className="mb-2">
               <label className="block mb-1">Photo URLs</label>
               <textarea
                 value={formData.photoUrls}
                 onChange={(e) => setFormData({ ...formData, photoUrls: e.target.value })}
-                className="w-full border-2 p-2 rounded h-12 border-blue-500"
+                className="w-full border-2 p-2 rounded h-24 border-green-600"
                 required
               />
             </div>
 
-            <div className="mb-2">
-              <label className="block mb-1">Quantity Available</label>
-              <input
-                type="number"
-                value={formData.quantityAvailable}
-                onChange={(e) => setFormData({ ...formData, quantityAvailable: e.target.value })}
-                className="border-2 rounded-md p-2 w-full border-blue-500"
-                required
-              />
-            </div>
 
             <div className="mb-2">
               <label className="block mb-1">Location</label>
               <input
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="border-2 rounded-md p-2 w-full border-blue-500"
+                className="border-2 rounded-md p-2 w-full border-green-600"
                 required
               />
             </div>
 
-            <div className="mb-4">
-              <label className="block mb-1">Phone Number</label>
-              <input
-                value={formData.phoneNumber}
-                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                className="border-2 rounded-md p-2 w-full border-blue-500"
-                required
-              />
-            </div>
+            
 
             <div className="flex gap-2">
               <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">Update</button>

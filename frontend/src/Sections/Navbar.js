@@ -36,7 +36,7 @@ const Navbar = ({ isListingsPage = false }) => {
   };
 
   return (
-    <div className="w-full px-4 py-3 flex flex-col md:flex-row items-center justify-between font-poppins bg-white sticky top-0 z-50 shadow-sm">
+    <div className="w-full relative px-4 py-3 flex flex-col md:flex-row items-center justify-between font-poppins bg-white top-0 z-50 shadow-sm">
       
       <div className="flex items-center gap-2 mb-2 md:mb-0">
         <img src={logo} className="w-12" alt="logo" />

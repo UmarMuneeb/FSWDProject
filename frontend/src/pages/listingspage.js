@@ -3,48 +3,99 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Postform from "../Forms/postform";
 import ManageListingsForm from "../Forms/Managementform";
+import ListingModal from "../Forms/ListingModal";
 
 
 const Listingspage = () => {
-
-  
   const [tobaccoListings, setTobaccoListings] = useState([]);
   const [showPostForm, setShowPostForm] = useState(false);
   const [showManagementForm, setShowManagementForm] = useState(false);
   const [selectedTobaccoType, setSelectedTobaccoType] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
+  const [locationNames, setLocationNames] = useState({});
+  const [selectedListing, setSelectedListing] = useState(null);
 
-  
-  
+
   const handleTobaccoTypeChange = (e) => {
     setSelectedTobaccoType(e.target.value);
   };
-  
+
   const handleQuantityChange = (e) => {
     setSelectedQuantity(e.target.value);
   };
-  
+
   const handleLocationChange = (e) => {
     setSelectedLocation(e.target.value);
   };
-  
+
+  const fetchReadableLocation = async (location) => {
+  if (!location || locationNames[location]) return;
+
+  const [lat, lon] = location.split(",");
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+    );
+    const data = await res.json();
+    const components = data.display_name.split(",").map(part => part.trim());
+
+    // Extract the smallest location + Tehsil + District + Province
+    const selectedParts = [];
+    const lowerComponents = components.map(c => c.toLowerCase());
+
+    if (components[0]) selectedParts.push(components[0]); // smallest unit (like village or town)
+
+    const tehsil = components.find(c => c.toLowerCase().includes("tehsil"));
+    const district = components.find(c => c.toLowerCase().includes("district"));
+    const province = components.find(c => c.toLowerCase().includes("punjab") || c.toLowerCase().includes("sindh") || c.toLowerCase().includes("kpk") || c.toLowerCase().includes("balochistan"));
+
+    if (tehsil) selectedParts.push(tehsil);
+    if (district) selectedParts.push(district);
+    if (province) selectedParts.push(province);
+
+    const finalLocation = selectedParts.join(", ");
+
+    setLocationNames((prev) => ({
+      ...prev,
+      [location]: finalLocation || location,
+    }));
+  } catch {
+    setLocationNames((prev) => ({
+      ...prev,
+      [location]: location,
+    }));
+  }
+};
+
+
   const filteredListings = tobaccoListings.filter((item) => {
     const matchTobaccoType =
       selectedTobaccoType === "" || item.tobaccoType === selectedTobaccoType;
     const matchQuantity =
-      selectedQuantity === "" || item.quantityAvailable >= parseInt(selectedQuantity);
+      selectedQuantity === "" ||
+      item.quantityAvailable >= parseInt(selectedQuantity);
     const matchLocation =
-      selectedLocation === "" || item.location.toLowerCase().includes(selectedLocation.toLowerCase());
-
-      return matchTobaccoType && matchQuantity && matchLocation;
+      selectedLocation === "" ||
+      (locationNames[item.location] &&
+        locationNames[item.location]
+          .toLowerCase()
+          .includes(selectedLocation.toLowerCase()));
+    return matchTobaccoType && matchQuantity && matchLocation;
   });
-  
-  // Fetch listings on mount
+
   const fetchListings = () => {
     axios
       .get("http://localhost:5000/api/listing/get")
-      .then((res) => setTobaccoListings(res.data))
+      .then((res) => {
+        setTobaccoListings(res.data);
+        // Fetch readable location names for all listings
+        res.data.forEach((item) => {
+          if (item.location) {
+            fetchReadableLocation(item.location);
+          }
+        });
+      })
       .catch((err) => console.error("Fetch error:", err));
   };
 
@@ -52,11 +103,10 @@ const Listingspage = () => {
     fetchListings();
   }, []);
 
-  
-
   return (
     <>
       <Navbar isListingsPage={true} />
+
       <div className="p-4 bg-gray-100 flex justify-center gap-11">
         <button
           className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
@@ -71,8 +121,11 @@ const Listingspage = () => {
           {showManagementForm ? "Close Manage Listing" : "Manage Listing"}
         </button>
       </div>
-      {showManagementForm && <ManageListingsForm/>}
-      {showPostForm && (<Postform SetShowForm={setShowPostForm} FetchListings={fetchListings}/>)}
+
+      {showManagementForm && <ManageListingsForm />}
+      {showPostForm && (
+        <Postform SetShowForm={setShowPostForm} FetchListings={fetchListings} />
+      )}
 
       <div className="flex">
         <aside className="w-64 bg-white p-4 border-r">
@@ -81,36 +134,18 @@ const Listingspage = () => {
           {/* Tobacco Type Filter */}
           <div className="mb-4">
             <h3 className="font-medium">Tobacco Type</h3>
-            <label className="block">
-              <input
-                type="radio"
-                name="tobaccoType"
-                value=""
-                checked={selectedTobaccoType === ""}
-                onChange={handleTobaccoTypeChange}
-              />
-              All
-            </label>
-            <label className="block">
-              <input
-                type="radio"
-                name="tobaccoType"
-                value="Naswar"
-                checked={selectedTobaccoType === "Naswar"}
-                onChange={handleTobaccoTypeChange}
-              />
-              Naswar
-            </label>
-            <label className="block">
-              <input
-                type="radio"
-                name="tobaccoType"
-                value="Cigarette"
-                checked={selectedTobaccoType === "Cigarette"}
-                onChange={handleTobaccoTypeChange}
-              />
-              Cigarette
-            </label>
+            {["", "Naswar", "Cigarette"].map((type) => (
+              <label key={type} className="block">
+                <input
+                  type="radio"
+                  name="tobaccoType"
+                  value={type}
+                  checked={selectedTobaccoType === type}
+                  onChange={handleTobaccoTypeChange}
+                />
+                {type === "" ? "All" : type}
+              </label>
+            ))}
           </div>
 
           {/* Quantity Filter */}
@@ -141,19 +176,18 @@ const Listingspage = () => {
         {/* Listings */}
         <section className="flex flex-row flex-wrap justify-center items-start gap-6 p-6 bg-green-500 flex-1">
           {filteredListings.map((item) => (
-            <div
-              key={item._id}
-              className="bg-white rounded shadow p-4 h-72 w-64 flex flex-col"
-            >
+            <div key={item._id} className="bg-white rounded shadow p-4 h-80 w-64 flex flex-col" onClick={() => setSelectedListing(item)}>
               <img
                 src={item.photoUrls[0]}
                 alt={item.tobaccoType}
                 className="h-32 w-full object-cover mb-2 rounded"
               />
               <h3 className="font-semibold text-lg">{item.tobaccoType}</h3>
-              <p className="text-sm text-gray-500">{item.location}</p>
+              <p className="text-sm text-gray-500">
+                {locationNames[item.location] || "Loading..."}
+              </p>
               <p className="text-green-700 font-bold">
-                Qty: {item.quantityAvailable}
+                Qty: {item.quantityAvailable} Kg
               </p>
               <p className="text-sm text-gray-700">{item.phoneNumber}</p>
               <p className="text-xs text-gray-400 mt-1">
@@ -163,6 +197,13 @@ const Listingspage = () => {
           ))}
         </section>
       </div>
+      {selectedListing && (
+        <ListingModal
+          listing={selectedListing}
+          onClose={() => setSelectedListing(null)}
+        />
+      )}
+
     </>
   );
 };
